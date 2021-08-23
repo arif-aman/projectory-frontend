@@ -1,11 +1,22 @@
 import React from "react";
-import { Container, Typography } from "@material-ui/core";
+import { Route, Switch } from "react-router-dom";
+
+// pages
+import Home from "./pages/Home";
+
+// components
+import Header from "./components/Header/Header";
 
 function App() {
   return (
-    <Container>
-      <Typography variant="h1">Hello</Typography>
-    </Container>
+    <>
+      <header>
+        <Header />
+      </header>
+      <Switch>
+        <Route component={Home} path="/" exact />
+      </Switch>
+    </>
   );
 }
 
