@@ -14,11 +14,6 @@ const Jobs = () => {
     (async () => {
       await dispatch(fetchJobs());
     })();
-    return async () => {
-      await dispatch({
-        type: "RESET_JOBS",
-      });
-    };
   }, [dispatch]);
 
   if (isLoading) {

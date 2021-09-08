@@ -15,11 +15,6 @@ const UserPostedJobs = () => {
     (async () => {
       await dispatch(fetchJobs({ uid }));
     })();
-    return async () => {
-      await dispatch({
-        type: "RESET_JOBS",
-      });
-    };
   }, [dispatch, uid]);
 
   // filter jobs

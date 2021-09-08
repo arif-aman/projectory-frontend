@@ -44,7 +44,6 @@ const serviceReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         services: null,
-        favServices: null,
         error: null,
         res: false,
       };
