@@ -103,22 +103,23 @@ const EditService = () => {
   }, [dispatch, sid]);
 
   // setting form data
-  useMemo(() => {
+  useEffect(() => {
+    if (!services || !services.packages) return;
     setFormData({
-      title: services?.title,
-      about: services?.about,
-      basicPrice: services?.packages[0]?.price,
-      basicDeliveryTime: services?.packages[0]?.deliveryTime,
-      standardPrice: services?.packages[1]?.price,
-      standardDeliveryTime: services?.packages[1]?.deliveryTime,
-      premiumPrice: services?.packages[2]?.price,
-      premiumDeliveryTime: services?.packages[2]?.deliveryTime,
+      title: services?.title || "",
+      about: services?.about || "",
+      basicPrice: services?.packages[0].price || "",
+      basicDeliveryTime: services?.packages[0].deliveryTime || "",
+      standardPrice: services?.packages[1].price || "",
+      standardDeliveryTime: services?.packages[1].deliveryTime || "",
+      premiumPrice: services?.packages[2].price || "",
+      premiumDeliveryTime: services?.packages[2].deliveryTime || "",
     });
-    setCategory(services?.category);
-    setBasicFeatures(services?.packages[0]?.features);
-    setStandardFeatures(services?.packages[1]?.features);
-    setPremiumFeatures(services?.packages[2]?.features);
-    setOldImgs(services?.images);
+    setCategory(services?.category || "");
+    setBasicFeatures(services?.packages[0].features || null);
+    setStandardFeatures(services?.packages[1].features || null);
+    setPremiumFeatures(services?.packages[2].features || null);
+    setOldImgs(services?.images || null);
   }, [services]);
 
   // check for error and success
@@ -238,7 +239,7 @@ const EditService = () => {
     return null;
   };
 
-  if (isLoading) {
+  if (isLoading || !services) {
     return (
       <Container>
         <Typography variant="h4" align="center">
@@ -383,14 +384,15 @@ const EditService = () => {
           typeFeatures={premiumFeatures}
           setTypeFeatures={setPremiumFeatures}
         />
-
-        {isLoading ? (
-          <CircularProgress color="primary" />
-        ) : (
-          <Button type="submit" variant="outlined" color="primary" size="large">
-            Update
-          </Button>
-        )}
+        <Box m={3}>
+          {isLoading ? (
+            <CircularProgress color="primary" />
+          ) : (
+            <Button type="submit" variant="outlined" color="primary" size="large">
+              Update
+            </Button>
+          )}
+        </Box>
       </form>
     </Container>
   );
