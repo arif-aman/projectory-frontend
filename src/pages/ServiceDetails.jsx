@@ -1,12 +1,16 @@
 import { Box, Container, Typography } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 // internal imports
 import { fetchServices } from "../actions/serviceAction";
+import AvatarWithUserName from "../components/AvatarWithUserName";
+import RatingStarCount from "../components/RatingStarCount";
+import SwiperComp from "../components/SwiperComp/SwiperComp";
 
 const ServiceDetails = () => {
   const { sid } = useParams();
+  const history = useHistory();
   const dispatch = useDispatch();
   const { error, res, isLoading, services } = useSelector((state) => state.services);
 
@@ -26,12 +30,45 @@ const ServiceDetails = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box m={3}>
-        <Typography variant="h4" align="center">
-          Service Page
-        </Typography>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        flexWrap="wrap"
+        gridGap={10}
+        my={4}
+      >
+        <Box my={3} flex={55}>
+          <Typography variant="h5">{services.title}</Typography>
+          <Box my={2} display="flex" justifyItems="center" alignItems="center" gridGap={10}>
+            <Box
+              onClick={() => history.push(`/user-profile/${services?.userId}`)}
+              style={{ cursor: "pointer" }}
+            >
+              <AvatarWithUserName
+                userName="swimshahriar"
+                publicId={services.userImg}
+                uploadPreset="projectory_services"
+                width="30"
+                height="30"
+                radius="max"
+                crop="fill"
+              />
+            </Box>
+            <Box mb={0.5}>
+              <RatingStarCount
+                star={services?.rating?.rating || 0}
+                starCount={services?.rating?.count || 0}
+              />
+            </Box>
+          </Box>
 
-        <Typography>{services.title}</Typography>
+          <Box>{services.images && <SwiperComp slides={services?.images} />}</Box>
+        </Box>
+
+        <Box my={3} flex={45}>
+          <Typography variant="h5">{services.title}</Typography>
+        </Box>
       </Box>
     </Container>
   );
