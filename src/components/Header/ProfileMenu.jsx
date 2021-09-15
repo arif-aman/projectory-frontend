@@ -41,16 +41,42 @@ const ProfileMenu = () => {
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
+            history.push(`/buyer-profile/${uid}`);
           }}
         >
-          Orders
+          Buyer Profile
         </MenuItem>
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
+            history.push("/orders/seller-services");
           }}
         >
-          Earnings
+          Service Orders
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            history.push("/orders/seller-jobs");
+          }}
+        >
+          Job Orders
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            history.push("/user-topup");
+          }}
+        >
+          Topup
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            history.push("/user-withdraw");
+          }}
+        >
+          Withdraw
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -59,6 +85,14 @@ const ProfileMenu = () => {
           }}
         >
           Skill Tests
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            history.push(`/chats?rid=${import.meta.env.VITE_ADMIN_ID}`);
+          }}
+        >
+          Contact Admin
         </MenuItem>
         <MenuItem
           onClick={async () => {
