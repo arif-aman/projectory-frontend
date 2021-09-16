@@ -21,6 +21,8 @@ import { useHistory } from "react-router-dom";
 import * as yup from "yup";
 // internal imports
 import { createJob } from "../../actions/jobAction";
+import BackBtn from "../../components/BackBtn";
+import SiteLayout from "../../components/layouts/SiteLayout";
 import SweetAlert from "../../components/SweetAlert";
 
 // styles
@@ -65,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 
 // form schema
 const schema = yup.object().shape({
-  title: yup.string().max(100).required("required"),
+  title: yup.string().required("required"),
   details: yup.string().required("required"),
   price: yup.number().min(300).required("required"),
   duration: yup.number().required("required"),
@@ -73,8 +75,8 @@ const schema = yup.object().shape({
 
 const AddJob = () => {
   const dispatch = useDispatch();
-  const { isLoading, error, res } = useSelector((state) => state.jobs);
-  const { token } = useSelector((state) => state.auth);
+  const { isLoading, error, addRes } = useSelector((state) => state.jobs);
+  const { token, uid } = useSelector((state) => state.auth);
   const classes = useStyles();
   const history = useHistory();
   const [category, setCategory] = useState("");
@@ -89,7 +91,7 @@ const AddJob = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   useEffect(() => {
-    if (res) {
+    if (addRes) {
       SweetAlert.fire({
         icon: "success",
         title: "Success",
@@ -112,7 +114,7 @@ const AddJob = () => {
       dispatch({
         type: "RESET_JOBS",
       });
-  }, [res, history, reset, dispatch]);
+  }, [addRes, history, reset, dispatch]);
 
   // submit handler
   const submitHandler = async (data) => {
@@ -132,128 +134,131 @@ const AddJob = () => {
   };
 
   return (
-    <Container maxWidth="lg" component="section" className={classes.formContainer}>
-      <Box my={3}>
-        <Typography variant="h4" align="center">
-          Add a Job
-        </Typography>
-      </Box>
+    <SiteLayout>
+      <Container maxWidth="lg" component="section" className={classes.formContainer}>
+        <BackBtn url={`/buyer-profile/${uid}`} />
+        <Box my={3}>
+          <Typography variant="h4" align="center">
+            Add a Job
+          </Typography>
+        </Box>
 
-      {/* -------------------- form ------------------- */}
-      <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
-        <Box mb={3}>{error && <Alert severity="error">{error}</Alert>}</Box>
+        {/* -------------------- form ------------------- */}
+        <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
+          <Box mb={3}>{error && <Alert severity="error">{error}</Alert>}</Box>
 
-        <TextField
-          {...register("title")}
-          label="Title"
-          helperText={errors.title?.message}
-          error={!!errors.title}
-          variant="outlined"
-          className={classes.formInput}
-        />
-        <TextField
-          {...register("details")}
-          label="Details"
-          helperText={errors.details?.message}
-          error={!!errors.details}
-          variant="outlined"
-          multiline
-          rows={6}
-          className={classes.formInput}
-        />
-
-        <TextField
-          {...register("price")}
-          label="Price"
-          helperText={errors.price?.message}
-          error={!!errors.price}
-          variant="outlined"
-          type="number"
-          className={classes.formInput}
-        />
-
-        <TextField
-          {...register("duration")}
-          label="Duration"
-          helperText={errors.duration?.message}
-          error={!!errors.duration}
-          variant="outlined"
-          type="number"
-          className={classes.formInput}
-        />
-
-        <FormControl variant="outlined" className={classes.select}>
-          <InputLabel id="category">Category</InputLabel>
-          <Select
-            labelId="category"
-            label="Category"
-            variant="outlined"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className={classes.select}
-          >
-            <MenuItem value="web-development">Web Development</MenuItem>
-            <MenuItem value="mobile-development">Mobile Development</MenuItem>
-            <MenuItem value="graphics-designing">Graphics Designing</MenuItem>
-            <MenuItem value="seo">SEO</MenuItem>
-            <MenuItem value="digital-marketing">Digital Marketing</MenuItem>
-          </Select>
-        </FormControl>
-
-        <Box display="flex" justifyContent="center" alignItems="center" width="100%">
           <TextField
-            label="Skills"
+            {...register("title")}
+            label="Title"
+            helperText={errors.title?.message}
+            error={!!errors.title}
             variant="outlined"
             className={classes.formInput}
-            value={skill}
-            onChange={(e) => setSkill(e.target.value)}
           />
-          <Box ml={2} mb={5}>
-            <Button
+          <TextField
+            {...register("details")}
+            label="Details"
+            helperText={errors.details?.message}
+            error={!!errors.details}
+            variant="outlined"
+            multiline
+            rows={6}
+            className={classes.formInput}
+          />
+
+          <TextField
+            {...register("price")}
+            label="Price"
+            helperText={errors.price?.message}
+            error={!!errors.price}
+            variant="outlined"
+            type="number"
+            className={classes.formInput}
+          />
+
+          <TextField
+            {...register("duration")}
+            label="Duration"
+            helperText={errors.duration?.message}
+            error={!!errors.duration}
+            variant="outlined"
+            type="number"
+            className={classes.formInput}
+          />
+
+          <FormControl variant="outlined" className={classes.select}>
+            <InputLabel id="category">Category</InputLabel>
+            <Select
+              labelId="category"
+              label="Category"
               variant="outlined"
-              color="secondary"
-              onClick={() => {
-                if (skill !== "") {
-                  setSkills((prev) => [...prev, skill]);
-                  setSkill("");
-                }
-              }}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className={classes.select}
             >
-              Add
-            </Button>
-          </Box>
-        </Box>
+              <MenuItem value="web-development">Web Development</MenuItem>
+              <MenuItem value="mobile-development">Mobile Development</MenuItem>
+              <MenuItem value="graphics-designing">Graphics Designing</MenuItem>
+              <MenuItem value="seo">SEO</MenuItem>
+              <MenuItem value="digital-marketing">Digital Marketing</MenuItem>
+            </Select>
+          </FormControl>
 
-        {/* ---------------------- skill list ----------------------- */}
-        <Box
-          display="flex"
-          justifyContent="flex-start"
-          alignItems="center"
-          flexWrap="wrap"
-          gridGap={10}
-        >
-          {skills?.length > 0 &&
-            skills.map((skill, idx) => (
-              <Chip
-                key={idx}
-                label={skill}
-                color={idx % 2 === 0 ? "primary" : "secondary"}
-                onDelete={() => {
-                  setSkills(skills.filter((item) => item !== skill));
+          <Box display="flex" justifyContent="center" alignItems="center" width="100%">
+            <TextField
+              label="Skills"
+              variant="outlined"
+              className={classes.formInput}
+              value={skill}
+              onChange={(e) => setSkill(e.target.value)}
+            />
+            <Box ml={2} mb={5}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => {
+                  if (skill !== "") {
+                    setSkills((prev) => [...prev, skill]);
+                    setSkill("");
+                  }
                 }}
-              />
-            ))}
-        </Box>
+              >
+                Add
+              </Button>
+            </Box>
+          </Box>
 
-        {isLoading ? (
-          <CircularProgress color="primary" />
-        ) : (
-          <Button type="submit" variant="contained" color="primary" size="large">
-            Submit
-          </Button>
-        )}
-      </form>
-    </Container>
+          {/* ---------------------- skill list ----------------------- */}
+          <Box
+            display="flex"
+            justifyContent="flex-start"
+            alignItems="center"
+            flexWrap="wrap"
+            gridGap={10}
+          >
+            {skills?.length > 0 &&
+              skills.map((skill, idx) => (
+                <Chip
+                  key={idx}
+                  label={skill}
+                  color={idx % 2 === 0 ? "primary" : "secondary"}
+                  onDelete={() => {
+                    setSkills(skills.filter((item) => item !== skill));
+                  }}
+                />
+              ))}
+          </Box>
+
+          {isLoading ? (
+            <CircularProgress color="primary" />
+          ) : (
+            <Button type="submit" variant="contained" color="primary" size="large">
+              Submit
+            </Button>
+          )}
+        </form>
+      </Container>
+    </SiteLayout>
   );
 };
 

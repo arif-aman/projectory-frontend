@@ -1,4 +1,12 @@
-import { Box, Button, Container, Divider, Paper, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Divider,
+  Paper,
+  Typography
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Image } from "cloudinary-react";
 import React, { useEffect } from "react";
@@ -7,6 +15,16 @@ import { GoPrimitiveDot } from "react-icons/go";
 import { HiLocationMarker } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 // actions
 import { fetchJobs } from "../../actions/jobAction";
 import { fetchOrders } from "../../actions/orderAction";
@@ -68,10 +86,10 @@ const BuyerProfile = () => {
     }
     (async () => {
       await dispatch(fetchUserInfo(userId));
-      await dispatch(fetchJobs({ uid }));
-      await dispatch(fetchOrders({ type: "services", reqUid: uid }, token));
+      await dispatch(fetchJobs({ uid: userId }));
+      await dispatch(fetchOrders({ type: "services", reqUid: userId }, token));
     })();
-  }, [userId, dispatch, history, uid, token]);
+  }, [userId, dispatch, history, token]);
 
   // format date
   let memberSince = null;
@@ -346,11 +364,10 @@ const BuyerProfile = () => {
                   <Typography variant="body1" color="textPrimary">
                     Total:{" "}
                     {orders?.reduce((acc, ord) => {
-                      let currSpent = 0;
                       if (ord.status === "finished") {
-                        currSpent = parseFloat(acc + ord.price);
+                        return (acc += parseFloat(ord.price));
                       }
-                      return currSpent;
+                      return acc;
                     }, 0)}
                     tk
                   </Typography>
@@ -368,16 +385,60 @@ const BuyerProfile = () => {
                   <Typography variant="body1" color="textPrimary">
                     Total:{" "}
                     {jobs?.reduce((acc, job) => {
-                      let currSpent = 0;
                       if (job.status === "finished") {
-                        currSpent = parseFloat(acc + job.price);
+                        return (acc += parseFloat(job.price));
                       }
-                      return currSpent;
+                      return acc;
                     }, 0)}
                     tk
                   </Typography>
                 </Box>
               </Paper>
+            </Box>
+            {/* -------------------------- charts ---------------------- */}
+            <Box
+              my={5}
+              width={450}
+              height={300}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              {jobs && orders ? (
+                <ResponsiveContainer width={300} height={250}>
+                  <BarChart
+                    data={[
+                      {
+                        name: "jobs",
+                        spent: jobs?.reduce((acc, job) => {
+                          if (job.status === "finished") {
+                            return (acc += parseFloat(job.price));
+                          }
+                          return acc;
+                        }, 0),
+                      },
+                      {
+                        name: "services",
+                        spent: orders?.reduce((acc, ord) => {
+                          if (ord.status === "finished") {
+                            return (acc += parseFloat(ord.price));
+                          }
+                          return acc;
+                        }, 0),
+                      },
+                    ]}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="spent" fill="#F3826F" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <CircularProgress color="primary" />
+              )}
             </Box>
           </Box>
         </Box>

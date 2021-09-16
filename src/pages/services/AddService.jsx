@@ -20,6 +20,8 @@ import { useHistory } from "react-router-dom";
 import * as yup from "yup";
 // actions
 import { addService } from "../../actions/serviceAction";
+import BackBtn from "../../components/BackBtn";
+import SiteLayout from "../../components/layouts/SiteLayout";
 // components
 import PackageInput from "../../components/PackageInput";
 import SweetAlert from "../../components/SweetAlert";
@@ -65,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 
 // form schema
 const schema = yup.object().shape({
-  title: yup.string().max(50).required("required"),
+  title: yup.string().required("required"),
   about: yup.string().required("required"),
   basicPrice: yup.number().min(300).required("required"),
   basicDeliveryTime: yup.number().min(1).max(30).required("required(1 - 30)"),
@@ -227,140 +229,151 @@ const AddService = () => {
   };
 
   return (
-    <Container maxWidth="lg" component="section" className={classes.formContainer}>
-      <Box mt={4}>
-        <Typography variant="h4" align="center">
-          Add a Service
-        </Typography>
-      </Box>
-
-      <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
-        <Box mb={3}>
-          {formError && <Alert severity="error">{formError}</Alert>}
-          {error && <Alert severity="error">{error}</Alert>}
-        </Box>
-        <Box display="flex" justifyContent="center" alignItems="center" gridGap={5} flexWrap="wrap">
-          {previewSource &&
-            previewSource.map((image, idx) => (
-              <Box
-                key={idx}
-                onClick={() => {
-                  setFormError(null);
-                  setPreviewSource((prev) => prev.filter((img) => img !== image));
-                }}
-              >
-                <img
-                  src={image}
-                  alt="choosen"
-                  className={classes.hover}
-                  style={{
-                    width: "150px",
-                    minWidth: "100px",
-                    height: "150px",
-                    minHeight: "100px",
-                  }}
-                />
-              </Box>
-            ))}
-        </Box>
-        <Box m={3}>
-          <Button variant="outlined" color="secondary" component="label">
-            Choose Images (max. 3)
-            <input
-              type="file"
-              multiple
-              value={imageInputState}
-              onChange={fileInputHanlder}
-              hidden
-            />
-          </Button>
+    <SiteLayout>
+      <Container maxWidth="lg" component="section" className={classes.formContainer}>
+        <BackBtn url={`/user-profile/${uid}`} />
+        <Box mt={4}>
+          <Typography variant="h4" align="center">
+            Add a Service
+          </Typography>
         </Box>
 
-        <TextField
-          {...register("title")}
-          label="Title"
-          helperText={errors.title?.message}
-          error={!!errors.title}
-          variant="outlined"
-          className={classes.formInput}
-        />
-        <TextField
-          {...register("about")}
-          label="About"
-          helperText={errors.about?.message}
-          error={!!errors.about}
-          variant="outlined"
-          multiline
-          rows={6}
-          className={classes.formInput}
-        />
-        <FormControl variant="outlined" className={classes.select}>
-          <InputLabel id="category">Category</InputLabel>
-          <Select
-            labelId="category"
-            label="Category"
-            variant="outlined"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className={classes.select}
+        <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
+          <Box mb={3}>
+            {formError && <Alert severity="error">{formError}</Alert>}
+            {error && <Alert severity="error">{error}</Alert>}
+          </Box>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            gridGap={5}
+            flexWrap="wrap"
           >
-            <MenuItem value="web-developement">Web Developement</MenuItem>
-            <MenuItem value="mobile-developement">Mobile Developement</MenuItem>
-            <MenuItem value="graphics-designing">Graphics Designing</MenuItem>
-          </Select>
-        </FormControl>
+            {previewSource &&
+              previewSource.map((image, idx) => (
+                <Box
+                  key={idx}
+                  onClick={() => {
+                    setFormError(null);
+                    setPreviewSource((prev) => prev.filter((img) => img !== image));
+                  }}
+                >
+                  <img
+                    src={image}
+                    alt="choosen"
+                    className={classes.hover}
+                    style={{
+                      width: "150px",
+                      minWidth: "100px",
+                      height: "150px",
+                      minHeight: "100px",
+                    }}
+                  />
+                </Box>
+              ))}
+          </Box>
+          <Box m={3}>
+            <Button variant="outlined" color="secondary" component="label">
+              Choose Images (max. 3)
+              <input
+                type="file"
+                multiple
+                value={imageInputState}
+                onChange={fileInputHanlder}
+                hidden
+              />
+            </Button>
+          </Box>
 
-        {/* basic package */}
-        <PackageInput
-          classes={classes}
-          register={register}
-          errorsPrice={errors.basicPrice}
-          errorsDeliveryTime={errors.basicDeliveryTime}
-          packageName="basic"
-          features={features.basic}
-          setFeatures={setFeaturesHandler}
-          onChangeFeatureHanlder={onChangeFeatureHanlder}
-          typeFeatures={basicFeatures}
-          setTypeFeatures={setBasicFeatures}
-        />
+          <TextField
+            {...register("title")}
+            label="Title"
+            helperText={errors.title?.message}
+            error={!!errors.title}
+            variant="outlined"
+            className={classes.formInput}
+          />
+          <TextField
+            {...register("about")}
+            label="About"
+            helperText={errors.about?.message}
+            error={!!errors.about}
+            variant="outlined"
+            multiline
+            rows={6}
+            className={classes.formInput}
+          />
+          <FormControl variant="outlined" className={classes.select}>
+            <InputLabel id="category">Category</InputLabel>
+            <Select
+              labelId="category"
+              label="Category"
+              variant="outlined"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className={classes.select}
+            >
+              <MenuItem value="web-development">Web Development</MenuItem>
+              <MenuItem value="mobile-development">Mobile Development</MenuItem>
+              <MenuItem value="graphics-designing">Graphics Designing</MenuItem>
+              <MenuItem value="seo">SEO</MenuItem>
+              <MenuItem value="digital-marketing">Digital Marketing</MenuItem>
+            </Select>
+          </FormControl>
 
-        {/* standard package */}
-        <PackageInput
-          classes={classes}
-          register={register}
-          errorsPrice={errors.standardPrice}
-          errorsDeliveryTime={errors.standardDeliveryTime}
-          packageName="standard"
-          features={features.standard}
-          setFeatures={setFeaturesHandler}
-          onChangeFeatureHanlder={onChangeFeatureHanlder}
-          typeFeatures={standardFeatures}
-          setTypeFeatures={setStandardFeatures}
-        />
+          {/* basic package */}
+          <PackageInput
+            classes={classes}
+            register={register}
+            errorsPrice={errors.basicPrice}
+            errorsDeliveryTime={errors.basicDeliveryTime}
+            packageName="basic"
+            features={features.basic}
+            setFeatures={setFeaturesHandler}
+            onChangeFeatureHanlder={onChangeFeatureHanlder}
+            typeFeatures={basicFeatures}
+            setTypeFeatures={setBasicFeatures}
+          />
 
-        {/* premium package */}
-        <PackageInput
-          classes={classes}
-          register={register}
-          errorsPrice={errors.premiumPrice}
-          errorsDeliveryTime={errors.premiumDeliveryTime}
-          packageName="premium"
-          features={features.premium}
-          setFeatures={setFeaturesHandler}
-          onChangeFeatureHanlder={onChangeFeatureHanlder}
-          typeFeatures={premiumFeatures}
-          setTypeFeatures={setPremiumFeatures}
-        />
+          {/* standard package */}
+          <PackageInput
+            classes={classes}
+            register={register}
+            errorsPrice={errors.standardPrice}
+            errorsDeliveryTime={errors.standardDeliveryTime}
+            packageName="standard"
+            features={features.standard}
+            setFeatures={setFeaturesHandler}
+            onChangeFeatureHanlder={onChangeFeatureHanlder}
+            typeFeatures={standardFeatures}
+            setTypeFeatures={setStandardFeatures}
+          />
 
-        {isLoading ? (
-          <CircularProgress color="primary" />
-        ) : (
-          <Button type="submit" variant="outlined" color="primary" size="large">
-            Submit
-          </Button>
-        )}
-      </form>
-    </Container>
+          {/* premium package */}
+          <PackageInput
+            classes={classes}
+            register={register}
+            errorsPrice={errors.premiumPrice}
+            errorsDeliveryTime={errors.premiumDeliveryTime}
+            packageName="premium"
+            features={features.premium}
+            setFeatures={setFeaturesHandler}
+            onChangeFeatureHanlder={onChangeFeatureHanlder}
+            typeFeatures={premiumFeatures}
+            setTypeFeatures={setPremiumFeatures}
+          />
+
+          {isLoading ? (
+            <CircularProgress color="primary" />
+          ) : (
+            <Button type="submit" variant="outlined" color="primary" size="large">
+              Submit
+            </Button>
+          )}
+        </form>
+      </Container>
+    </SiteLayout>
   );
 };
 

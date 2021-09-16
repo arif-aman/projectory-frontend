@@ -1,36 +1,22 @@
-import { Button } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Box, Button, Container } from "@material-ui/core";
 import React, { useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
+import { AiFillMessage, AiOutlineClose } from "react-icons/ai";
 import { HiMenuAlt3 } from "react-icons/hi";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { NavLink, useHistory } from "react-router-dom";
-// action
-import { logOutHandler } from "../../actions/authAction";
-// styles
+// internal imports
+import logo from "../../assets/logo.svg";
 import "./Header.css";
-
-const useStyles = makeStyles((theme) => ({
-  logoutBtn: {
-    marginTop: 10,
-    paddingLeft: 20,
-    [theme.breakpoints.up("md")]: {
-      marginLeft: 10,
-      marginTop: 0,
-      paddingLeft: 0,
-    },
-  },
-}));
+import ProfileMenu from "./ProfileMenu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { token, uid } = useSelector((state) => state.auth);
-  const classes = useStyles();
+
+  const { token } = useSelector((state) => state.auth);
 
   // link lists
-  let navLinks = [
+  const navLinks = [
     {
       title: "Home",
       url: "/",
@@ -47,91 +33,85 @@ const Header = () => {
       title: "About",
       url: "/about",
     },
-    {
-      title: "Login/Register",
-      url: "/auth",
-    },
   ];
 
-  if (token) {
-    navLinks = [
-      {
-        title: "Home",
-        url: "/",
-      },
-      {
-        title: "Jobs",
-        url: "/jobs",
-      },
-      {
-        title: "Services",
-        url: "/services",
-      },
-      {
-        title: "About",
-        url: "/about",
-      },
-      {
-        title: "Profile",
-        url: `/user-profile/${uid}`,
-      },
-    ];
-  }
-
   return (
-    <div className="header">
-      <h1 onClick={() => history.push("/")}>Projectory</h1>
+    <Box position="fixed" top="0" left="0" right="0" zIndex="1000" bgcolor="#fff" boxShadow={2}>
+      <Container maxWidth="lg">
+        <Box display="flex" justifyContent="space-between" alignItems="center" px={1}>
+          {/* ------------------------ logo ------------------ */}
+          <Box
+            maxHeight="70px"
+            height="70px"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            className="logo"
+            onClick={() => history.push("/")}
+          >
+            <img src={logo} alt="logo" width="100%" style={{ cursor: "pointer" }} />
+          </Box>
 
-      <nav className="header__list" id="nav">
-        {navLinks.map((link, idx) => (
-          <li key={idx}>
-            <NavLink
-              to={link.url}
-              onClick={() => {
-                setIsMenuOpen((prev) => !prev);
-                document.getElementById("nav").classList.remove("show");
-              }}
-              activeClassName="active"
-              exact
-            >
-              {link.title}
-            </NavLink>
-          </li>
-        ))}
-        {token && (
-          <li className={classes.logoutBtn}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={async () => {
-                await dispatch(logOutHandler());
-                setIsMenuOpen((prev) => !prev);
-                document.getElementById("nav").classList.remove("show");
-              }}
-            >
-              Logout
-            </Button>
-          </li>
-        )}
-      </nav>
-      <div className="header__menu">
-        {isMenuOpen ? (
-          <AiOutlineClose
-            onClick={() => {
-              setIsMenuOpen((prev) => !prev);
-              document.getElementById("nav").classList.toggle("show");
-            }}
-          />
-        ) : (
-          <HiMenuAlt3
-            onClick={() => {
-              setIsMenuOpen((prev) => !prev);
-              document.getElementById("nav").classList.toggle("show");
-            }}
-          />
-        )}
-      </div>
-    </div>
+          {/* --------------------------- nav links ------------------------ */}
+          <nav className="header__list" id="nav">
+            {navLinks.map((link, idx) => (
+              <li key={idx}>
+                <NavLink
+                  to={link.url}
+                  onClick={() => {
+                    setIsMenuOpen((prev) => !prev);
+                    document.getElementById("nav").classList.remove("show");
+                  }}
+                  activeClassName="active"
+                  exact
+                >
+                  {link.title}
+                </NavLink>
+              </li>
+            ))}
+          </nav>
+
+          {/* ----------------------- menu icon for mobile view ------------------ */}
+          <Box display="flex" justifyContent="center" alignItems="center" flexWrap="wrap">
+            <div className="header__menu">
+              {isMenuOpen ? (
+                <AiOutlineClose
+                  onClick={() => {
+                    setIsMenuOpen((prev) => !prev);
+                    document.getElementById("nav").classList.toggle("show");
+                  }}
+                />
+              ) : (
+                <HiMenuAlt3
+                  onClick={() => {
+                    setIsMenuOpen((prev) => !prev);
+                    document.getElementById("nav").classList.toggle("show");
+                  }}
+                />
+              )}
+            </div>
+
+            {/* ---------------------- profile, msg icons + login btn ---------------- */}
+            {token ? (
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <ProfileMenu />
+                <Button onClick={() => history.push("/chats")}>
+                  <Box fontSize="1.3rem">
+                    <AiFillMessage />
+                  </Box>
+                </Button>
+              </Box>
+            ) : (
+              <Box ml={1}>
+                <Button variant="contained" color="primary" onClick={() => history.push("/auth")}>
+                  Login
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 
