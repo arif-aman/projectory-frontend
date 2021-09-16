@@ -33,6 +33,6 @@ VITE_ADMIN_ID="admin id goes here"
 
 ### Links 🔗
 
-- Server Repo: [Click Here](https://github.com/swimshahriar/projectory-api) <br/>
+- Server Repo: [Click Here](https://github.com/arif-aman/projectory-backend) <br/>
 
 - Socket Server Repo: [Click Here](https://github.com/swimshahriar/projectory-socket-server) <br/>
