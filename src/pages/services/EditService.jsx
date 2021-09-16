@@ -19,7 +19,6 @@ import { useParams } from "react-router-dom";
 import { fetchServices, updateService } from "../../actions/serviceAction";
 // components
 import CloudImage from "../../components/CloudImage";
-import SiteLayout from "../../components/layouts/SiteLayout";
 import Loading from "../../components/Loading";
 import PackageInput from "../../components/PackageInput";
 import SweetAlert from "../../components/SweetAlert";
@@ -256,161 +255,159 @@ const EditService = () => {
   }
 
   return (
-    <SiteLayout>
-      <Container maxWidth="lg">
-        <Box mt={3}>
-          <Typography variant="h4" align="center">
-            Edit Service
-          </Typography>
-        </Box>
+    <Container maxWidth="lg">
+      <Box mt={3}>
+        <Typography variant="h4" align="center">
+          Edit Service
+        </Typography>
+      </Box>
 
-        <Container className={classes.formContainer}>
-          <form onSubmit={submitHandler} className={classes.form}>
-            <Box mb={3}>
-              {formError && <Alert severity="error">{formError}</Alert>}
-              {error && <Alert severity="error">{error}</Alert>}
-            </Box>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              gridGap={5}
-              flexWrap="wrap"
-            >
-              {previewSource && previewSource.length > 0
-                ? previewSource.map((image, idx) => (
-                    <Box
-                      key={idx}
-                      display="flex"
-                      flexWrap="wrap"
-                      onClick={() => {
-                        setFormError(null);
-                        setPreviewSource((prev) => prev.filter((img) => img !== image));
+      <Container className={classes.formContainer}>
+        <form onSubmit={submitHandler} className={classes.form}>
+          <Box mb={3}>
+            {formError && <Alert severity="error">{formError}</Alert>}
+            {error && <Alert severity="error">{error}</Alert>}
+          </Box>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            gridGap={5}
+            flexWrap="wrap"
+          >
+            {previewSource && previewSource.length > 0
+              ? previewSource.map((image, idx) => (
+                  <Box
+                    key={idx}
+                    display="flex"
+                    flexWrap="wrap"
+                    onClick={() => {
+                      setFormError(null);
+                      setPreviewSource((prev) => prev.filter((img) => img !== image));
+                    }}
+                  >
+                    <img
+                      src={image}
+                      alt="choosen"
+                      className={classes.hover}
+                      style={{
+                        width: "250px",
+                        minWidth: "200px",
                       }}
-                    >
-                      <img
-                        src={image}
-                        alt="choosen"
-                        className={classes.hover}
-                        style={{
-                          width: "250px",
-                          minWidth: "200px",
-                        }}
-                      />
-                    </Box>
-                  ))
-                : oldImgs &&
-                  oldImgs.map((image, idx) => (
-                    <Box key={idx}>
-                      <CloudImage
-                        publicId={image}
-                        uploadPreset="projectory_services"
-                        className={classes.hover}
-                        width="250"
-                        crop="scale"
-                      />
-                    </Box>
-                  ))}
-            </Box>
-            <Box m={3}>
-              <Button variant="outlined" color="secondary" component="label">
-                Change Images (max. 3)
-                <input
-                  type="file"
-                  multiple
-                  value={imageInputState}
-                  onChange={fileInputHanlder}
-                  hidden
-                />
+                    />
+                  </Box>
+                ))
+              : oldImgs &&
+                oldImgs.map((image, idx) => (
+                  <Box key={idx}>
+                    <CloudImage
+                      publicId={image}
+                      uploadPreset="projectory_services"
+                      className={classes.hover}
+                      width="250"
+                      crop="scale"
+                    />
+                  </Box>
+                ))}
+          </Box>
+          <Box m={3}>
+            <Button variant="outlined" color="secondary" component="label">
+              Change Images (max. 3)
+              <input
+                type="file"
+                multiple
+                value={imageInputState}
+                onChange={fileInputHanlder}
+                hidden
+              />
+            </Button>
+          </Box>
+
+          <TextField
+            label="Title"
+            value={formData.title}
+            onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+            variant="outlined"
+            className={classes.formInput}
+          />
+          <TextField
+            label="About"
+            value={formData.about}
+            onChange={(e) => setFormData((prev) => ({ ...prev, about: e.target.value }))}
+            variant="outlined"
+            multiline
+            rows={6}
+            className={classes.formInput}
+          />
+          <FormControl variant="outlined" className={classes.select}>
+            <InputLabel id="category">Category</InputLabel>
+            <Select
+              labelId="category"
+              label="Category"
+              variant="outlined"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className={classes.select}
+            >
+              <MenuItem value="web-developement">Web Developement</MenuItem>
+              <MenuItem value="mobile-developement">Mobile Developement</MenuItem>
+              <MenuItem value="graphics-designing">Graphics Designing</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* basic package */}
+          <PackageInput
+            classes={classes}
+            register={false}
+            formData={formData}
+            setFormData={setFormData}
+            packageName="basic"
+            features={features.basic}
+            setFeatures={setFeaturesHandler}
+            onChangeFeatureHanlder={onChangeFeatureHanlder}
+            typeFeatures={basicFeatures}
+            setTypeFeatures={setBasicFeatures}
+          />
+
+          {/* standard package */}
+          <PackageInput
+            classes={classes}
+            register={false}
+            formData={formData}
+            setFormData={setFormData}
+            packageName="standard"
+            features={features.standard}
+            setFeatures={setFeaturesHandler}
+            onChangeFeatureHanlder={onChangeFeatureHanlder}
+            typeFeatures={standardFeatures}
+            setTypeFeatures={setStandardFeatures}
+          />
+
+          {/* premium package */}
+          <PackageInput
+            classes={classes}
+            register={false}
+            formData={formData}
+            setFormData={setFormData}
+            packageName="premium"
+            features={features.premium}
+            setFeatures={setFeaturesHandler}
+            onChangeFeatureHanlder={onChangeFeatureHanlder}
+            typeFeatures={premiumFeatures}
+            setTypeFeatures={setPremiumFeatures}
+          />
+          <Box m={3}>
+            {isLoading ? (
+              <CircularProgress color="primary" />
+            ) : (
+              <Button type="submit" variant="outlined" color="primary" size="large">
+                Update
               </Button>
-            </Box>
-
-            <TextField
-              label="Title"
-              value={formData.title}
-              onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-              variant="outlined"
-              className={classes.formInput}
-            />
-            <TextField
-              label="About"
-              value={formData.about}
-              onChange={(e) => setFormData((prev) => ({ ...prev, about: e.target.value }))}
-              variant="outlined"
-              multiline
-              rows={6}
-              className={classes.formInput}
-            />
-            <FormControl variant="outlined" className={classes.select}>
-              <InputLabel id="category">Category</InputLabel>
-              <Select
-                labelId="category"
-                label="Category"
-                variant="outlined"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className={classes.select}
-              >
-                <MenuItem value="web-developement">Web Developement</MenuItem>
-                <MenuItem value="mobile-developement">Mobile Developement</MenuItem>
-                <MenuItem value="graphics-designing">Graphics Designing</MenuItem>
-              </Select>
-            </FormControl>
-
-            {/* basic package */}
-            <PackageInput
-              classes={classes}
-              register={false}
-              formData={formData}
-              setFormData={setFormData}
-              packageName="basic"
-              features={features.basic}
-              setFeatures={setFeaturesHandler}
-              onChangeFeatureHanlder={onChangeFeatureHanlder}
-              typeFeatures={basicFeatures}
-              setTypeFeatures={setBasicFeatures}
-            />
-
-            {/* standard package */}
-            <PackageInput
-              classes={classes}
-              register={false}
-              formData={formData}
-              setFormData={setFormData}
-              packageName="standard"
-              features={features.standard}
-              setFeatures={setFeaturesHandler}
-              onChangeFeatureHanlder={onChangeFeatureHanlder}
-              typeFeatures={standardFeatures}
-              setTypeFeatures={setStandardFeatures}
-            />
-
-            {/* premium package */}
-            <PackageInput
-              classes={classes}
-              register={false}
-              formData={formData}
-              setFormData={setFormData}
-              packageName="premium"
-              features={features.premium}
-              setFeatures={setFeaturesHandler}
-              onChangeFeatureHanlder={onChangeFeatureHanlder}
-              typeFeatures={premiumFeatures}
-              setTypeFeatures={setPremiumFeatures}
-            />
-            <Box m={3}>
-              {isLoading ? (
-                <CircularProgress color="primary" />
-              ) : (
-                <Button type="submit" variant="outlined" color="primary" size="large">
-                  Update
-                </Button>
-              )}
-            </Box>
-          </form>
-        </Container>
+            )}
+          </Box>
+        </form>
       </Container>
-    </SiteLayout>
+    </Container>
   );
 };
 

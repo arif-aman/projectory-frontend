@@ -12,8 +12,6 @@ export const fetchJobs = (data) => async (dispatch) => {
     fetchUrl = `${import.meta.env.VITE_API_BASE_URI}/jobs?jid=${data.jid}`;
   } else if (data?.uid) {
     fetchUrl = `${import.meta.env.VITE_API_BASE_URI}/jobs?uid=${data.uid}`;
-  } else if (data?.cat) {
-    fetchUrl = `${import.meta.env.VITE_API_BASE_URI}/jobs?cat=${data.cat}`;
   } else {
     fetchUrl = `${import.meta.env.VITE_API_BASE_URI}/jobs`;
   }
@@ -48,14 +46,17 @@ export const createJob = (data, token) => async (dispatch) => {
   const fetchUrl = `${import.meta.env.VITE_API_BASE_URI}/jobs`;
 
   try {
-    await axios.post(fetchUrl, data, {
+    const res = await axios.post(fetchUrl, data, {
       headers: {
         authorization: `Bearer ${token}`,
       },
     });
 
     dispatch({
-      type: "ADD_JOBS",
+      type: "FETCH_JOBS",
+      payload: {
+        jobs: res.data.jobs,
+      },
     });
   } catch (error) {
     dispatch({

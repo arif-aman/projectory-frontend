@@ -1,25 +1,8 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  Paper,
-  Tab,
-  Tabs,
-  TextField,
-  Typography
-} from "@material-ui/core";
+import { AppBar, Box, Button, Divider, Paper, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { AiOutlineFieldTime } from "react-icons/ai";
 import { BsArrowRight } from "react-icons/bs";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-// internal imports
-import { createOrder } from "../actions/orderAction";
-import DialogModal from "./DialogModal";
-import SweetAlert from "./SweetAlert";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -56,142 +39,41 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // tabcontent
-const TabContent = ({ packageInfo, sid, userId, userName, serviceName }) => {
-  const [open, setOpen] = useState(false);
-  const [brief, setBrief] = useState("");
-  const dispatch = useDispatch();
-  const { token, uid } = useSelector((state) => state.auth);
-  const { createRes, isLoading } = useSelector((state) => state.orders);
-  const history = useHistory();
+const TabContent = ({ packageInfo }) => (
+  <>
+    <Box display="flex" justifyContent="space-between">
+      <Typography variant="h6" gutterBottom>
+        {packageInfo.name.toUpperCase()}
+      </Typography>
 
-  // handle submit
-  const handleSubmit = async () => {
-    if (brief !== "") {
-      const finalData = {
-        title: serviceName,
-        package: packageInfo.name,
-        price: packageInfo.price,
-        features: packageInfo.features,
-        duration: packageInfo.deliveryTime,
-        serviceId: sid,
-        type: "services",
-        recPersonId: userId,
-        recPersonUserName: userName,
-        brief,
-      };
+      <Box display="flex" justifyItems="center" alignItems="center" gridGap={5}>
+        <AiOutlineFieldTime />
+        <Typography variant="body1">{packageInfo.deliveryTime} days delivery</Typography>
+      </Box>
+    </Box>
 
-      await dispatch(createOrder(finalData, token));
-    }
-  };
+    <Divider />
 
-  // check if order created
-  useEffect(() => {
-    if (createRes) {
-      SweetAlert.fire({
-        icon: "success",
-        title: "Success",
-        timer: 2000,
-        timerProgressBar: true,
-        position: "bottom-right",
-        toast: true,
-        showConfirmButton: false,
-      });
-
-      setBrief("");
-      setOpen(false);
-      history.push("/orders/buyer-services");
-    }
-
-    return () => dispatch({ type: "RESET_ORDER" });
-  }, [createRes, dispatch, history]);
-
-  return (
-    <>
-      {/* ------------------- dialog modal -------------------- */}
-      <DialogModal
-        title="Request Service"
-        open={open}
-        setOpen={setOpen}
-        bodyText={
-          <Box my={2}>
-            <Typography>
-              {packageInfo.name} - {packageInfo.price} tk
-            </Typography>
-          </Box>
-        }
-        body={
-          <Box my={2}>
-            <TextField
-              required
-              label="about your work"
-              variant="outlined"
-              multiline
-              rows={7}
-              value={brief}
-              onChange={(e) => setBrief(e.target.value)}
-            />
-          </Box>
-        }
-        actions={
-          <Box my={2}>
-            {!isLoading ? (
-              <Button variant="contained" color="primary" onClick={handleSubmit}>
-                Order
-              </Button>
-            ) : (
-              <CircularProgress color="primary" />
-            )}
-          </Box>
-        }
-      />
-
-      <Box display="flex" justifyContent="space-between">
-        <Typography variant="h6" gutterBottom>
-          {packageInfo.name.toUpperCase()}
-        </Typography>
-
-        <Box display="flex" justifyItems="center" alignItems="center" gridGap={5}>
-          <AiOutlineFieldTime />
-          <Typography variant="body1">{packageInfo.deliveryTime} days delivery</Typography>
+    <Box my={3}>
+      {packageInfo.features.map((feature, idx) => (
+        <Box display="flex" justifyItems="center" alignItems="center" gridGap={5} key={idx}>
+          <BsArrowRight />
+          <Typography variant="body1" gutterBottom>
+            {feature}
+          </Typography>
         </Box>
-      </Box>
+      ))}
+    </Box>
 
-      <Divider />
+    <Box display="flex" justifyContent="flex-end">
+      <Button variant="contained" color="primary" size="large">
+        Continue ({packageInfo.price}tk)
+      </Button>
+    </Box>
+  </>
+);
 
-      <Box my={3}>
-        {packageInfo.features.map((feature, idx) => (
-          <Box display="flex" justifyItems="center" alignItems="center" gridGap={5} key={idx}>
-            <BsArrowRight />
-            <Typography variant="body1" gutterBottom>
-              {feature}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-
-      {/* ---------------------- continue button --------------------- */}
-      <Box display="flex" justifyContent="flex-end">
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          disabled={userId === uid}
-          onClick={() => {
-            if (token) {
-              setOpen(true);
-            } else {
-              history.push("/auth");
-            }
-          }}
-        >
-          Continue ({packageInfo.price}tk)
-        </Button>
-      </Box>
-    </>
-  );
-};
-
-const PriceTab = ({ packages, sid, userId, userName, serviceName }) => {
+const PriceTab = ({ packages }) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -205,7 +87,7 @@ const PriceTab = ({ packages, sid, userId, userName, serviceName }) => {
 
   return (
     <div className={classes.root} style={{ minWidth: "350px" }}>
-      <AppBar position="static" color="default">
+      <AppBar position="static">
         <Tabs value={value} onChange={handleChange} aria-label="price tabs">
           <Tab label="Basic" {...a11yProps(0)} />
           <Tab label="Standard" {...a11yProps(1)} />
@@ -213,31 +95,13 @@ const PriceTab = ({ packages, sid, userId, userName, serviceName }) => {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <TabContent
-          sid={sid}
-          userId={userId}
-          userName={userName}
-          serviceName={serviceName}
-          packageInfo={basicInfo}
-        />
+        <TabContent packageInfo={basicInfo} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <TabContent
-          sid={sid}
-          userId={userId}
-          userName={userName}
-          serviceName={serviceName}
-          packageInfo={standardInfo}
-        />
+        <TabContent packageInfo={standardInfo} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <TabContent
-          sid={sid}
-          userId={userId}
-          userName={userName}
-          serviceName={serviceName}
-          packageInfo={premiumInfo}
-        />
+        <TabContent packageInfo={premiumInfo} />
       </TabPanel>
     </div>
   );

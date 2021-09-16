@@ -3,13 +3,12 @@ const initialState = {
   error: null,
   jobs: null,
   res: false,
-  addRes: false,
 };
 
 const jobReducer = (state = initialState, action) => {
   switch (action.type) {
     case "LOADING_JOBS":
-      return { ...state, isLoading: true, error: null, res: false, addRes: false };
+      return { ...state, isLoading: true, error: null, res: false };
 
     case "STOP_LOADING_JOBS":
       return { ...state, isLoading: false };
@@ -30,13 +29,6 @@ const jobReducer = (state = initialState, action) => {
         error: null,
         res: true,
       };
-    case "ADD_JOBS":
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        addRes: true,
-      };
 
     case "RESET_JOBS":
       return {
@@ -45,7 +37,6 @@ const jobReducer = (state = initialState, action) => {
         jobs: null,
         error: null,
         res: false,
-        addRes: false,
       };
 
     case "ERROR_JOBS":

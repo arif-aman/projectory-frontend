@@ -10,7 +10,6 @@ import * as yup from "yup";
 import { forgotPassHandler, loginHandler, registerHandler } from "../actions/authAction";
 // components
 import DialogModal from "../components/DialogModal";
-import SiteLayout from "../components/layouts/SiteLayout";
 
 // styles
 const useStyles = makeStyles((theme) => ({
@@ -105,7 +104,7 @@ const Auth = () => {
   };
 
   return (
-    <SiteLayout>
+    <>
       <DialogModal
         open={open}
         setOpen={setOpen}
@@ -309,7 +308,7 @@ const Auth = () => {
           </span>
         </Typography>
       </Container>
-    </SiteLayout>
+    </>
   );
 };
 
